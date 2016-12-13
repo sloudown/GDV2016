@@ -34,7 +34,7 @@ public class Zuerich1 extends PApplet{
 		PFont myFont = createFont("Monospaced", 12);
 		barScale.setStyle(color(60, 120), 6, -2, myFont);
 		
-		List<Feature> countries = GeoJSONReader.loadData(this, "data/anzahlveloparkplatz.geojson");
+		List<Feature> countries = GeoJSONReader.loadData(this, "data/statistischequartiere.json");
 		List<Marker> countryMarkers = MapUtils.createSimpleMarkers(countries);
 		map.addMarkers(countryMarkers);
 	}
@@ -50,6 +50,15 @@ public class Zuerich1 extends PApplet{
 			map.zoomIn();
 		if (key == '-')
 			map.zoomOut();
+	}
+	
+	public void mouseMoved() {
+		for (Marker marker : map.getMarkers()) {
+			marker.setSelected(false);
+		}
+		Marker marker = map.getFirstHitMarker(mouseX, mouseY);
+		if (marker != null)
+			marker.setSelected(true);
 	}
 
 	public static void main(String args[]) {
