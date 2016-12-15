@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="data"/>
-	<classpathentry kind="src" path="examples"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="lib/core.jar"/>
 	<classpathentry kind="lib" path="lib/gluegen-rt.jar"/>
@@ -17,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/libTUIO.jar"/>
 	<classpathentry kind="lib" path="lib/unfolding.0.9.9beta.jar"/>
 	<classpathentry kind="lib" path="lib/gicentreUtils.jar"/>
+	<classpathentry kind="src" path="examples"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

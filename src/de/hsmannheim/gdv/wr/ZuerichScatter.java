@@ -2,18 +2,6 @@ package de.hsmannheim.gdv.wr;
 
 import org.gicentre.utils.stat.*; // For chart classes.
 import processing.core.PApplet;
-import processing.core.PFont;
-
-import java.util.List;
-
-import de.fhpotsdam.unfolding.UnfoldingMap;
-import de.fhpotsdam.unfolding.data.Feature;
-import de.fhpotsdam.unfolding.data.GeoJSONReader;
-import de.fhpotsdam.unfolding.geo.Location;
-import de.fhpotsdam.unfolding.marker.Marker;
-import de.fhpotsdam.unfolding.ui.BarScaleUI;
-import de.fhpotsdam.unfolding.utils.MapUtils;
-
 
 
 public class ZuerichScatter extends PApplet {
@@ -21,10 +9,12 @@ public class ZuerichScatter extends PApplet {
 	// Simple scatterplot compating income and life expectancy.
 
 	XYChart scatterplot;
-
+	public void settings() {
+		  size(500, 250);
+		}
 	// Loads data into the chart and customises its appearance.
 	public void setup() {
-		size(500, 250);
+		
 		textFont(createFont("Arial", 11), 11);
 
 		// Both x and y data set here.
@@ -36,10 +26,10 @@ public class ZuerichScatter extends PApplet {
 		float[] income = new float[data.length - 1];
 		float[] lifeExp = new float[data.length - 1];
 
-		for (int i = 0; i < data.length - 1; i++) {
+		for (int i = 1; i < data.length - 1; i++) {
 			String[] tokens = data[i + 1].split(",");
 			income[i] = Float.parseFloat(tokens[1]);
-			lifeExp[i] = Float.parseFloat(tokens[2]);
+			lifeExp[i] = Float.parseFloat(tokens[5]);
 		}
 		scatterplot.setData(income, lifeExp);
 
