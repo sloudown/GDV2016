@@ -1,15 +1,29 @@
 package de.hsmannheim.gdv.wr;
 
 import org.gicentre.utils.stat.*; // For chart classes.
+import processing.core.PApplet;
+import processing.core.PFont;
 
-public class ZuerichScatter extends PApplet{
+import java.util.List;
+
+import de.fhpotsdam.unfolding.UnfoldingMap;
+import de.fhpotsdam.unfolding.data.Feature;
+import de.fhpotsdam.unfolding.data.GeoJSONReader;
+import de.fhpotsdam.unfolding.geo.Location;
+import de.fhpotsdam.unfolding.marker.Marker;
+import de.fhpotsdam.unfolding.ui.BarScaleUI;
+import de.fhpotsdam.unfolding.utils.MapUtils;
+
+
+
+public class ZuerichScatter extends PApplet {
 
 	// Simple scatterplot compating income and life expectancy.
 
 	XYChart scatterplot;
 
 	// Loads data into the chart and customises its appearance.
-	void setup() {
+	public void setup() {
 		size(500, 250);
 		textFont(createFont("Arial", 11), 11);
 
@@ -18,7 +32,7 @@ public class ZuerichScatter extends PApplet{
 
 		// Load in data from a file
 		// (first line of file contains column headings).
-		String[] data = loadStrings("ukIncomeAndLifeExp.csv"); //aendern!!!
+		String[] data = loadStrings("data/medeinkommenquartier.csv"); 
 		float[] income = new float[data.length - 1];
 		float[] lifeExp = new float[data.length - 1];
 
@@ -42,8 +56,12 @@ public class ZuerichScatter extends PApplet{
 	}
 
 	// Draws the scatterplot.
-	void draw() {
+	public void draw() {
 		background(255);
 		scatterplot.draw(20, 20, width - 40, height - 40);
+	}
+	
+	public static void main(String args[]) {
+		PApplet.main(new String[] { ZuerichScatter.class.getName() });
 	}
 }
