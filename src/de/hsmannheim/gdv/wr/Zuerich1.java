@@ -17,6 +17,8 @@ import de.fhpotsdam.unfolding.utils.MapUtils;
 public class Zuerich1 extends PApplet{
 	UnfoldingMap map;
 	BarScaleUI barScale;
+	int radwegColor = color(255, 0, 0);
+	int radstreifenColor = color(0, 0, 153 );
 
 	public void settings() {
 		size(800, 600, P2D);
@@ -37,6 +39,33 @@ public class Zuerich1 extends PApplet{
 		List<Feature> countries = GeoJSONReader.loadData(this, "data/statistischequartiere.json");
 		List<Marker> countryMarkers = MapUtils.createSimpleMarkers(countries);
 		map.addMarkers(countryMarkers);
+		
+		
+		  // Radwege einzeichnen
+		  List<Feature> radwege = GeoJSONReader.loadData(this, "radwege_koordinaten.geojson");
+		  List<Marker> radwegMarkers = MapUtils.createSimpleMarkers(radwege);
+		  map.addMarkers(radwegMarkers); 
+		  
+		  
+		  for (Marker marker : radwegMarkers) {
+			  	marker.setColor(radwegColor);
+			    marker.setStrokeWeight(1);
+			    marker.setStrokeColor(color(0, 0, 0, 0));
+		  }
+		  
+		  // Radstreifen einzeichnen
+		  List<Feature> radstreifen = GeoJSONReader.loadData(this, "radstreifen_koordinaten.geojson");
+		  List<Marker> radstreifenMarkers = MapUtils.createSimpleMarkers(radstreifen);
+		  map.addMarkers(radstreifenMarkers); 
+		  
+		  
+		  for (Marker marker : radstreifenMarkers) {
+			  	marker.setColor(radstreifenColor);
+			    marker.setStrokeWeight(1);
+			    marker.setStrokeColor(color(0, 0, 0, 0));
+		  }
+		  
+		
 	}
 
 	public void draw() {
