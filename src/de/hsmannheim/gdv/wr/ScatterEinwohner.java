@@ -2,9 +2,11 @@ package de.hsmannheim.gdv.wr;
 
 import org.gicentre.utils.stat.XYChart;
 
+import de.fhpotsdam.unfolding.marker.Marker;
 import processing.core.PApplet;
 import processing.data.Table;
 import processing.data.TableRow;
+
 
 public class ScatterEinwohner extends PApplet {
 
@@ -12,6 +14,8 @@ public class ScatterEinwohner extends PApplet {
 
 	XYChart scatterplot;
 	Table table;
+	float[] einwohner;
+	float[] radwegeLaenge;
 
 	public void settings() {
 		size(750, 400, P2D);
@@ -19,6 +23,7 @@ public class ScatterEinwohner extends PApplet {
 
 	// Loads data into the chart and customises its appearance.
 	public void setup() {
+		
 
 		textFont(createFont("Arial", 11), 11);
 
@@ -29,8 +34,8 @@ public class ScatterEinwohner extends PApplet {
 		table = loadTable("quartierdaten_formatiert.csv","header");
 
 
-		float[] einwohner = new float[table.getRowCount()];
-		float[] radwegeLaenge = new float[table.getRowCount()];
+		 einwohner = new float[table.getRowCount()];
+		 radwegeLaenge = new float[table.getRowCount()];
 		int reihe = 0;
 		for (TableRow row : table.rows()) {
 
@@ -60,6 +65,24 @@ public class ScatterEinwohner extends PApplet {
 	public void draw() {
 		background(255);
 		scatterplot.draw(20, 20, width - 40, height - 40);
+		
+//		if(mousePressed) {
+//			for(int i=0; i < radwegeLaenge.length; i++) {
+//				float x = einwohner[i];
+//				float y = radwegeLaenge[i];
+//				println(mouseX);
+//				println(mouseY);
+//				if(mouseX-2 > x && mouseX+2 < x && mouseY-2 > y && mouseY+2 < y){
+//					fill(0);
+//					ellipse(x, y, 20, 20);
+//				}
+//			}
+//		}
+		
+	}
+	
+	public void mousePressed() {
+
 	}
 
 	public static void main(String args[]) {
