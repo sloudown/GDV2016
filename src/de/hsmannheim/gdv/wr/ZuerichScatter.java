@@ -23,15 +23,15 @@ public class ZuerichScatter extends PApplet {
 		// Load in data from a file
 		// (first line of file contains column headings).
 		String[] data = loadStrings("data/medeinkommenquartier.csv"); 
-		float[] income = new float[data.length - 1];
-		float[] lifeExp = new float[data.length - 1];
+		float[] einkommen25 = new float[data.length - 1];
+		float[] einkommen50 = new float[data.length - 1];
 
 		for (int i = 1; i < data.length - 1; i++) {
 			String[] tokens = data[i + 1].split(",");
-			income[i] = Float.parseFloat(tokens[1]);
-			lifeExp[i] = Float.parseFloat(tokens[5]);
+			einkommen25[i] = Float.parseFloat(tokens[7]);
+			einkommen50[i] = Float.parseFloat(tokens[8]);
 		}
-		scatterplot.setData(income, lifeExp);
+		scatterplot.setData(einkommen25, einkommen50);
 
 		// Axis formatting and labels.
 		scatterplot.showXAxis(true);
