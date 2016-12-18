@@ -74,14 +74,15 @@ public class QuartiereNagel2 extends PApplet {
 		map.draw();
 	}
 
-	public static void main(String[] args) {
-		PApplet.main(new String[] { QuartiereNagel2.class.getName() });
-	}
+	
 
 	class DataEntry {
 		String countryName;
 		String id;
 		Integer year;
 		Float value;
+	}
+	public static void main(String[] args) {
+		PApplet.main(new String[] { QuartiereNagel2.class.getName() });
 	}
 }
