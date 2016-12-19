@@ -19,6 +19,7 @@ public class Zuerich1 extends PApplet{
 	BarScaleUI barScale;
 	int radwegColor = color(255, 0, 0);
 	int radstreifenColor = color(0, 0, 153 );
+	String quartierLabel = "";
 
 	public void settings() {
 		size(800, 600, P2D);
@@ -72,6 +73,9 @@ public class Zuerich1 extends PApplet{
 		background(160);
 		map.draw();
 		barScale.draw();
+		
+		fill(255);
+		text(quartierLabel, mouseX, mouseY);
 	}
 
 	public void keyPressed() {
@@ -86,8 +90,13 @@ public class Zuerich1 extends PApplet{
 			marker.setSelected(false);
 		}
 		Marker marker = map.getFirstHitMarker(mouseX, mouseY);
-		if (marker != null)
+		if (marker != null) {
 			marker.setSelected(true);
+		quartierLabel = (String) marker.getProperty("Quartiername");
+		} else {
+			quartierLabel = "";
+		}
+		
 	}
 
 	public static void main(String args[]) {
