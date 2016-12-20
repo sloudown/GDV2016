@@ -4,6 +4,7 @@ import org.gicentre.utils.stat.XYChart;
 
 import de.fhpotsdam.unfolding.marker.Marker;
 import processing.core.PApplet;
+import processing.core.PVector;
 import processing.data.Table;
 import processing.data.TableRow;
 
@@ -16,6 +17,16 @@ public class ScatterEinwohner extends PApplet {
 	Table table;
 	float[] einwohner;
 	float[] radwegeLaenge;
+	String[] quartiernamen;
+	
+	//koordinaten fuer hoverpoint
+	float hoverX;
+	float hoverY;
+	
+	//koordinaten fuer haver label
+	float hoverLabelX = 0;
+	float hoverLabelY = 0;
+	String hoverLabel = "";
 
 	public void settings() {
 		size(750, 400, P2D);
@@ -36,14 +47,17 @@ public class ScatterEinwohner extends PApplet {
 
 		 einwohner = new float[table.getRowCount()];
 		 radwegeLaenge = new float[table.getRowCount()];
+		 quartiernamen = new String[table.getRowCount()];
 		int reihe = 0;
 		for (TableRow row : table.rows()) {
 
 			float einwohnerzahl = row.getFloat("einwohneranzahl");
 			float radlaenge = row.getFloat("sum_streifen_wege");
-
+			String quartiername = row.getString("Quartiername");
+			
 			einwohner[reihe] = einwohnerzahl;
 			radwegeLaenge[reihe] = radlaenge;
+			quartiernamen[reihe] = quartiername;
 			reihe++;
 		}
 
@@ -59,6 +73,8 @@ public class ScatterEinwohner extends PApplet {
 		// Symbol styles
 		scatterplot.setPointColour(color(180, 50, 50, 200));
 		scatterplot.setPointSize(7);
+		
+		
 	}
 
 	// Draws the scatterplot.
@@ -66,23 +82,29 @@ public class ScatterEinwohner extends PApplet {
 		background(255);
 		scatterplot.draw(20, 20, width - 40, height - 40);
 		
-//		if(mousePressed) {
-//			for(int i=0; i < radwegeLaenge.length; i++) {
-//				float x = einwohner[i];
-//				float y = radwegeLaenge[i];
-//				println(mouseX);
-//				println(mouseY);
-//				if(mouseX-2 > x && mouseX+2 < x && mouseY-2 > y && mouseY+2 < y){
-//					fill(0);
-//					ellipse(x, y, 20, 20);
-//				}
-//			}
-//		}
+		//hover marker
+		fill(0);
+		ellipse(hoverX, hoverY, 10, 10);
+		text(hoverLabel, hoverLabelX, hoverLabelY);
+	
 		
 	}
 	
 	public void mousePressed() {
-
+		PVector mousePoint = new PVector(mouseX, mouseY);
+		
+		for (int i=0; i<einwohner.length; i++) {
+			PVector koordinate = new PVector(einwohner[i],radwegeLaenge[i]);
+			PVector koordinateOnScreen = scatterplot.getDataToScreen(koordinate);
+			if (dist(mouseX, mouseY, koordinateOnScreen.x, koordinateOnScreen.y) <= 5) {
+				hoverX = koordinateOnScreen.x;
+				hoverY = koordinateOnScreen.y;
+				hoverLabelX = koordinateOnScreen.x;
+				hoverLabelY = koordinateOnScreen.y;
+				hoverLabel = quartiernamen[i];
+			}
+		}
+		
 	}
 
 	public static void main(String args[]) {
