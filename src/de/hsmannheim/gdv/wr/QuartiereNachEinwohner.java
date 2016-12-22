@@ -54,8 +54,8 @@ public class QuartiereNachEinwohner extends PApplet {
 			TableRow reihe = table.findRow(quartiername, "Quartiername");
 			float einwohnerProKM2 = reihe.getFloat("einwohner_pro_km2");
 			float value = map(einwohnerProKM2, 1300, 13200, 0, 255);
-			marker.setColor(color(value, 0, 0));
-			
+			//marker.setColor(color(value, 0, 0));
+			marker.setColor(myCTable.findColour(value));
 		}
 
 	}
