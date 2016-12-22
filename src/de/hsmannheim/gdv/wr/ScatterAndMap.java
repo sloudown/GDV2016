@@ -62,32 +62,12 @@ public class ScatterAndMap extends PApplet {
 			m.setColor(color(60, 150));
 		}
 		map.addMarkers(quartierMarkers);
-		
+
 		// ==== SMALL MAP ====
 		smallMap = new UnfoldingMap(this, "smallMap", 820, 420, 200, 200);
-		smallMap.zoomAndPanTo(12, new Location(47.37174, 8.54226));
+		smallMap.zoomAndPanTo(12, new Location(47.37174, 8.54226));		
+		drawBikeLanes();
 
-		// Radwege einzeichnen
-		List<Feature> radwege = GeoJSONReader.loadData(this, "radwege_koordinaten.geojson");
-		List<Marker> radwegMarkers = MapUtils.createSimpleMarkers(radwege);
-		smallMap.addMarkers(radwegMarkers);
-
-		for (Marker marker : radwegMarkers) {
-			marker.setColor(radwegColor);
-			marker.setStrokeWeight(1);
-			marker.setStrokeColor(color(0, 0, 0, 0));
-		}
-
-		// Radstreifen einzeichnen
-		List<Feature> radstreifen = GeoJSONReader.loadData(this, "radstreifen_koordinaten.geojson");
-		List<Marker> radstreifenMarkers = MapUtils.createSimpleMarkers(radstreifen);
-		smallMap.addMarkers(radstreifenMarkers);
-
-		for (Marker marker : radstreifenMarkers) {
-			marker.setColor(radstreifenColor);
-			marker.setStrokeWeight(1);
-			marker.setStrokeColor(color(0, 0, 0, 0));
-		}
 		// ==== MISC ====
 		// add a bar scale to your map
 		barScale = new BarScaleUI(this, map, 700, 20);
@@ -158,17 +138,7 @@ public class ScatterAndMap extends PApplet {
 	}
 
 	public void mousePressed() {
-
-		selectedDistrictMarker = map.getFirstHitMarker(mouseX, mouseY);
-		if (selectedDistrictMarker != null) {
-			smallMap.getDefaultMarkerManager().clearMarkers();
-			// selectedDistrictMarker.setColor(color(255, 10));
-			smallMap.addMarker(selectedDistrictMarker);
-			smallMap.zoomAndPanToFit(selectedDistrictMarker);
-			String name = selectedDistrictMarker.getStringProperty("Quartiername");
-			text(name, 600, 500);
-		}
-
+		selectDistrictMarker();
 	}
 
 	public void mouseMoved() {
@@ -190,7 +160,46 @@ public class ScatterAndMap extends PApplet {
 		findSelectedQuartier();
 	}
 
-	// markiert einen punkt im Scatterplot wenn darauf geklickt wurde und zeigt
+	void drawBikeLanes() {
+		// Radwege einzeichnen
+		List<Feature> radwege = GeoJSONReader.loadData(this, "radwege_koordinaten.geojson");
+		List<Marker> radwegMarkers = MapUtils.createSimpleMarkers(radwege);
+		smallMap.addMarkers(radwegMarkers);
+
+		for (Marker marker : radwegMarkers) {
+			marker.setColor(radwegColor);
+			marker.setStrokeWeight(1);
+			marker.setStrokeColor(color(0, 0, 0, 0));
+		}
+
+		// Radstreifen einzeichnen
+		List<Feature> radstreifen = GeoJSONReader.loadData(this, "radstreifen_koordinaten.geojson");
+		List<Marker> radstreifenMarkers = MapUtils.createSimpleMarkers(radstreifen);
+		smallMap.addMarkers(radstreifenMarkers);
+
+		for (Marker marker : radstreifenMarkers) {
+			marker.setColor(radstreifenColor);
+			marker.setStrokeWeight(1);
+			marker.setStrokeColor(color(0, 0, 0, 0));
+		}
+	}
+
+	void selectDistrictMarker(){
+		selectedDistrictMarker = map.getFirstHitMarker(mouseX, mouseY);
+		if (selectedDistrictMarker != null) {
+			smallMap.getDefaultMarkerManager().clearMarkers(); // cleared aber
+																// auch die
+																// radwege weg
+			// selectedDistrictMarker.setColor(color(255, 10));
+			smallMap.addMarkers(selectedDistrictMarker);
+			smallMap.zoomAndPanToFit(selectedDistrictMarker);
+			drawBikeLanes();
+			String name = selectedDistrictMarker.getStringProperty("Quartiername");
+			text(name, 600, 500);
+		}
+	}
+	
+	// markiert einen punkt im Scatterplot, wenn darauf geklickt wurde und zeigt
 	// auch den Quartiernamen an
 	void selectScatterPoint() {
 		PVector mousePoint = new PVector(mouseX, mouseY);
@@ -207,7 +216,7 @@ public class ScatterAndMap extends PApplet {
 		}
 	}
 
-	// sucht und markiert quartier in der karte, wellches in Scatterplot
+	// sucht und markiert quartier in der karte, welches in Scatterplot
 	// angeklickt wurde
 	void findSelectedQuartier() {
 		String quartiernameMap;
