@@ -21,11 +21,14 @@ public class ScatterAndMap extends PApplet {
 
 	// ==== Map ====
 	UnfoldingMap map;
+	UnfoldingMap smallMap;
 	BarScaleUI barScale;
 	int radwegColor = color(255, 0, 0);
 	int radstreifenColor = color(0, 0, 153);
 	String quartierLabel = "";
 
+	Marker selectedDistrictMarker = null;
+	
 	// ==== Scatterplot =====
 	XYChart scatterplot;
 	Table table;
@@ -53,7 +56,10 @@ public class ScatterAndMap extends PApplet {
 		map = new UnfoldingMap(this, "map1", 0, 0, 800, 600);
 		map.zoomAndPanTo(12, new Location(47.37174, 8.54226));
 		MapUtils.createDefaultEventDispatcher(this, map);
-
+		
+		smallMap = new UnfoldingMap(this, "smallMap", 820, 420, 200, 200);
+		smallMap.zoomAndPanTo(12, new Location(47.37174, 8.54226));
+	
 		// add a bar scale to your map
 		barScale = new BarScaleUI(this, map, 700, 20);
 
@@ -63,6 +69,9 @@ public class ScatterAndMap extends PApplet {
 
 		List<Feature> quartiere = GeoJSONReader.loadData(this, "data/statistischequartiere.json");
 		List<Marker> quartierMarkers = MapUtils.createSimpleMarkers(quartiere);
+		for (Marker m : quartierMarkers) {
+			m.setColor(color(60, 150));
+		}
 		map.addMarkers(quartierMarkers);
 
 		// ==== SCATTERPLOT =====
@@ -95,7 +104,7 @@ public class ScatterAndMap extends PApplet {
 		// Axis formatting and labels.
 		scatterplot.showXAxis(true);
 		scatterplot.showYAxis(true);
-		scatterplot.setXFormat("$###,###");
+		scatterplot.setXFormat("###,###");
 		scatterplot.setXAxisLabel("Anzahl der Einwohner (Angabe in 1000)");
 		scatterplot.setYAxisLabel("Länge der Radwege un Meter");
 
@@ -111,6 +120,9 @@ public class ScatterAndMap extends PApplet {
 
 		map.draw();
 		barScale.draw();
+		
+		
+		smallMap.draw();
 
 		fill(255);
 		text(quartierLabel, mouseX, mouseY);
@@ -126,9 +138,18 @@ public class ScatterAndMap extends PApplet {
 
 	public void mousePressed() {
 
-		selectScatterPoint();
-		findSelectedQuartier();
-
+		
+		
+		selectedDistrictMarker = map.getFirstHitMarker(mouseX,  mouseY);
+		if (selectedDistrictMarker != null) {
+			smallMap.getDefaultMarkerManager().clearMarkers();
+			//selectedDistrictMarker.setColor(color(255, 10));
+			smallMap.addMarker(selectedDistrictMarker);
+			smallMap.zoomAndPanToFit(selectedDistrictMarker);
+			String name = selectedDistrictMarker.getStringProperty("Quartiername");
+			text(name, 600, 500);
+		}
+		
 	}
 
 	public void mouseMoved() {
@@ -145,6 +166,9 @@ public class ScatterAndMap extends PApplet {
 				quartierLabel = "";
 			}
 		}
+		
+		selectScatterPoint();
+		findSelectedQuartier();
 	}
 
 	// markiert einen punkt im Scatterplot wenn darauf geklickt wurde und zeigt
@@ -154,7 +178,7 @@ public class ScatterAndMap extends PApplet {
 		for (int i = 0; i < einwohner.length; i++) {
 			PVector koordinate = new PVector(einwohner[i], radwegeLaenge[i]);
 			PVector koordinateOnScreen = scatterplot.getDataToScreen(koordinate);
-			if (dist(mouseX, mouseY, koordinateOnScreen.x, koordinateOnScreen.y) <= 5) {
+			if (dist(mouseX, mouseY, koordinateOnScreen.x, koordinateOnScreen.y) <= 10) {
 				hoverX = koordinateOnScreen.x;
 				hoverY = koordinateOnScreen.y;
 				hoverLabelX = koordinateOnScreen.x;
