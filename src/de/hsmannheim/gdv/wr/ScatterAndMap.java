@@ -28,7 +28,7 @@ public class ScatterAndMap extends PApplet {
 	String quartierLabel = "";
 
 	Marker selectedDistrictMarker = null;
-	
+
 	// ==== Scatterplot =====
 	XYChart scatterplot;
 	Table table;
@@ -40,7 +40,7 @@ public class ScatterAndMap extends PApplet {
 	float hoverX;
 	float hoverY;
 
-	// koordinaten fuer haver label
+	// koordinaten fuer hover label
 	float hoverLabelX = 0;
 	float hoverLabelY = 0;
 	String hoverLabel = "";
@@ -49,30 +49,52 @@ public class ScatterAndMap extends PApplet {
 		size(1400, 600, P2D);
 	}
 
-	// Loads data into the chart and customises its appearance.
+	// Loads data into the chart and customizes its appearance.
 	public void setup() {
 
 		// ==== MAP ====
 		map = new UnfoldingMap(this, "map1", 0, 0, 800, 600);
 		map.zoomAndPanTo(12, new Location(47.37174, 8.54226));
 		MapUtils.createDefaultEventDispatcher(this, map);
-		
-		smallMap = new UnfoldingMap(this, "smallMap", 820, 420, 200, 200);
-		smallMap.zoomAndPanTo(12, new Location(47.37174, 8.54226));
-	
-		// add a bar scale to your map
-		barScale = new BarScaleUI(this, map, 700, 20);
-
-		// optionally style your bar scale
-		PFont myFont = createFont("Monospaced", 12);
-		barScale.setStyle(color(60, 120), 6, -2, myFont);
-
 		List<Feature> quartiere = GeoJSONReader.loadData(this, "data/statistischequartiere.json");
 		List<Marker> quartierMarkers = MapUtils.createSimpleMarkers(quartiere);
 		for (Marker m : quartierMarkers) {
 			m.setColor(color(60, 150));
 		}
 		map.addMarkers(quartierMarkers);
+		
+		// ==== SMALL MAP ====
+		smallMap = new UnfoldingMap(this, "smallMap", 820, 420, 200, 200);
+		smallMap.zoomAndPanTo(12, new Location(47.37174, 8.54226));
+
+		// Radwege einzeichnen
+		List<Feature> radwege = GeoJSONReader.loadData(this, "radwege_koordinaten.geojson");
+		List<Marker> radwegMarkers = MapUtils.createSimpleMarkers(radwege);
+		smallMap.addMarkers(radwegMarkers);
+
+		for (Marker marker : radwegMarkers) {
+			marker.setColor(radwegColor);
+			marker.setStrokeWeight(1);
+			marker.setStrokeColor(color(0, 0, 0, 0));
+		}
+
+		// Radstreifen einzeichnen
+		List<Feature> radstreifen = GeoJSONReader.loadData(this, "radstreifen_koordinaten.geojson");
+		List<Marker> radstreifenMarkers = MapUtils.createSimpleMarkers(radstreifen);
+		smallMap.addMarkers(radstreifenMarkers);
+
+		for (Marker marker : radstreifenMarkers) {
+			marker.setColor(radstreifenColor);
+			marker.setStrokeWeight(1);
+			marker.setStrokeColor(color(0, 0, 0, 0));
+		}
+		// ==== MISC ====
+		// add a bar scale to your map
+		barScale = new BarScaleUI(this, map, 700, 20);
+
+		// optionally style your bar scale
+		PFont myFont = createFont("Monospaced", 12);
+		barScale.setStyle(color(60, 120), 6, -2, myFont);
 
 		// ==== SCATTERPLOT =====
 		textFont(createFont("Arial", 11), 11);
@@ -120,8 +142,7 @@ public class ScatterAndMap extends PApplet {
 
 		map.draw();
 		barScale.draw();
-		
-		
+
 		smallMap.draw();
 
 		fill(255);
@@ -138,18 +159,16 @@ public class ScatterAndMap extends PApplet {
 
 	public void mousePressed() {
 
-		
-		
-		selectedDistrictMarker = map.getFirstHitMarker(mouseX,  mouseY);
+		selectedDistrictMarker = map.getFirstHitMarker(mouseX, mouseY);
 		if (selectedDistrictMarker != null) {
 			smallMap.getDefaultMarkerManager().clearMarkers();
-			//selectedDistrictMarker.setColor(color(255, 10));
+			// selectedDistrictMarker.setColor(color(255, 10));
 			smallMap.addMarker(selectedDistrictMarker);
 			smallMap.zoomAndPanToFit(selectedDistrictMarker);
 			String name = selectedDistrictMarker.getStringProperty("Quartiername");
 			text(name, 600, 500);
 		}
-		
+
 	}
 
 	public void mouseMoved() {
@@ -166,7 +185,7 @@ public class ScatterAndMap extends PApplet {
 				quartierLabel = "";
 			}
 		}
-		
+
 		selectScatterPoint();
 		findSelectedQuartier();
 	}
