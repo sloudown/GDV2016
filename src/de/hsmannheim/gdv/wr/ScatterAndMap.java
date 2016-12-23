@@ -146,18 +146,23 @@ public class ScatterAndMap extends PApplet {
 		if (mouseX <= 800 && mouseY <= 600) {
 			for (Marker marker : map.getMarkers()) {
 				marker.setSelected(false);
+				marker.setStrokeWeight(1);
 			}
 			Marker marker = map.getFirstHitMarker(mouseX, mouseY);
 			if (marker != null) {
 				marker.setSelected(true);
+				marker.setStrokeWeight(3);
 				quartierLabel = (String) marker.getProperty("Quartiername");
 			} else {
 				quartierLabel = "";
 			}
 		}
-
+		
+		deselectScatterPoint();
 		selectScatterPoint();
-		findSelectedQuartier();
+		findSelectedQuartierFromScatter();
+		findSelectedQuartierFromMap();
+
 	}
 
 	void drawBikeLanes() {
@@ -212,13 +217,23 @@ public class ScatterAndMap extends PApplet {
 				hoverLabelX = koordinateOnScreen.x;
 				hoverLabelY = koordinateOnScreen.y;
 				hoverLabel = quartiernamen[i];
-			}
+			} 
 		}
+
+	}
+	
+	void deselectScatterPoint() {
+		hoverX = 0;
+		hoverY = 0;
+		hoverLabelX = 0;
+		hoverLabelY = 0;
+		hoverLabel = "";
 	}
 
 	// sucht und markiert quartier in der karte, welches in Scatterplot
 	// angeklickt wurde
-	void findSelectedQuartier() {
+	void findSelectedQuartierFromScatter() {
+		if(mouseX >= 800 && mouseY <= 400){
 		String quartiernameMap;
 		String quartiernameScatter = hoverLabel;
 		Marker selectedMarker;
@@ -229,8 +244,37 @@ public class ScatterAndMap extends PApplet {
 				marker.setSelected(true);
 			}
 		}
+		}
 	}
 
+	//beim hover ueber die quartieren wird quartier im Scatter auch markiert
+	void findSelectedQuartierFromMap() {
+
+		Marker marker = map.getFirstHitMarker(mouseX, mouseY);
+		if (marker != null) {
+			String quartiername = (String) marker.getProperty("Quartiername");
+			int indexOfSelectedQuartier = -1;
+			for (int i = 0; i< quartiernamen.length; i++) {
+				if (quartiername.equals(quartiernamen[i])) {
+					indexOfSelectedQuartier = i;
+				}
+			}
+			if(indexOfSelectedQuartier > -1) {
+				
+				PVector koordinate = new PVector(einwohner[indexOfSelectedQuartier], radwegeLaenge[indexOfSelectedQuartier]);
+				PVector koordinateOnScreen = scatterplot.getDataToScreen(koordinate);
+			
+					hoverX = koordinateOnScreen.x;
+					hoverY = koordinateOnScreen.y;
+					hoverLabelX = koordinateOnScreen.x;
+					hoverLabelY = koordinateOnScreen.y;
+					hoverLabel = quartiernamen[indexOfSelectedQuartier];
+			}
+
+		} 
+
+	}
+	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { ScatterAndMap.class.getName() });
 	}
