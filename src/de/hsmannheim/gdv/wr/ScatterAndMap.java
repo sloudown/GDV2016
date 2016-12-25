@@ -48,7 +48,7 @@ public class ScatterAndMap extends PApplet {
 	// Details
 
 	public void settings() {
-		size(1400, 600, P2D);
+		size(1600, 600, P2D);
 	}
 
 	// Loads data into the chart and customizes its appearance.
@@ -132,12 +132,14 @@ public class ScatterAndMap extends PApplet {
 
 		scatterplot.draw(800, 0, 600, 400);
 
-		// hover marker
+		// hover marker scatter
 		if(!hoverLabel.equals("")) {
 		fill(0);
 		ellipse(hoverX, hoverY, 10, 10);
 		text(hoverLabel, hoverLabelX, hoverLabelY);
 		}
+		drawDetails();
+
 	}
 
 	public void mousePressed() {
@@ -155,7 +157,6 @@ public class ScatterAndMap extends PApplet {
 			}}
 
 		selectDistrictMarker();
-		getDetails();
 	}
 
 	public void mouseMoved() {
@@ -217,6 +218,7 @@ public class ScatterAndMap extends PApplet {
 			smallMap.zoomAndPanToFit(selectedDistrictMarker);
 			drawBikeLanes();
 			String name = selectedDistrictMarker.getStringProperty("Quartiername");
+			//muss in draw verschoben werden sonst blinkt es nur kurz auf- wird nur einmal gezeichnet
 			text(name, 600, 500);
 		}
 	}
@@ -275,18 +277,26 @@ public class ScatterAndMap extends PApplet {
 		}
 	}
 
-	//beim hover ueber die quartieren wird quartier im Scatter auch markiert
-	void findSelectedQuartierFromMap() {
-
+	int findeIndexOfSelectedQuartier() {
 		Marker marker = map.getFirstHitMarker(mouseX, mouseY);
+		int indexOfSelectedQuartier = -1;
 		if (marker != null) {
 			String quartiername = (String) marker.getProperty("Quartiername");
-			int indexOfSelectedQuartier = -1;
+			
 			for (int i = 0; i< quartiernamen.length; i++) {
 				if (quartiername.equals(quartiernamen[i])) {
 					indexOfSelectedQuartier = i;
 				}
 			}
+		}
+		return indexOfSelectedQuartier;
+	}
+	
+	//beim hover ueber die quartieren wird quartier im Scatter auch markiert
+	void findSelectedQuartierFromMap() {
+
+			int indexOfSelectedQuartier = findeIndexOfSelectedQuartier();
+	
 			if(indexOfSelectedQuartier > -1) {
 				
 				PVector koordinate = new PVector(einwohner[indexOfSelectedQuartier], radwegeLaenge[indexOfSelectedQuartier]);
@@ -299,31 +309,56 @@ public class ScatterAndMap extends PApplet {
 					hoverLabel = quartiernamen[indexOfSelectedQuartier];
 			}
 
-		} 
+		 
 
 	}
 	
-	void getDetails() {
-		//doppelter Code find selected quartier from map
-		Marker marker = map.getFirstHitMarker(mouseX, mouseY);
-		if (marker != null) {
-			String quartiername = (String) marker.getProperty("Quartiername");
+	void drawDetails() {
+			
 			float radwege = 0;
 			float einwohner = 0;
-			int indexOfSelectedQuartier = -1;
-			for (int i = 0; i< quartiernamen.length; i++) {
-				if (quartiername.equals(quartiernamen[i])) {
-					indexOfSelectedQuartier = i;
-				}
-			}
+			int indexOfSelectedQuartier = findeIndexOfSelectedQuartier();
+			
 			if(indexOfSelectedQuartier > -1) {
 				radwege = radwegeLaenge[indexOfSelectedQuartier];
 				einwohner = this.einwohner[indexOfSelectedQuartier];
-				text(radwege,900, 400 );
-				text(einwohner, 900, 410);
+				
+				fill(123,123,123);
+				text("Radwege",1050, 450 );
+				rect(1100, 435,radwege/100, 20);
+				
+				text("Einwohner", 1050, 480);
+				rect(1100, 465, einwohner/100, 20);
+				
+				float longestRadweg = getLongestBikelane();
+				float highestEinwohnerzahl = getHighestPopulation();
+				
+				fill(color(60, 150));
+				rect(1100, 435, longestRadweg/100, 20);
+				rect(1100, 465, highestEinwohnerzahl/100, 20);
 			}
 
+		
+	}
+	
+	float getLongestBikelane() {
+		float laengste = 0;
+		for(float radweg : radwegeLaenge) {
+			if(laengste < radweg) {
+				laengste = radweg;
+			}
 		}
+		return laengste;
+	}
+	
+	float getHighestPopulation() {
+		float highest = 0;
+		for(float popultation : einwohner) {
+			if(highest < popultation) {
+				highest = popultation;
+			}
+		}
+		return highest;
 	}
 	
 	public static void main(String args[]) {
