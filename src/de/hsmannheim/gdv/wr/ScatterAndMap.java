@@ -44,6 +44,8 @@ public class ScatterAndMap extends PApplet {
 	float hoverLabelX = 0;
 	float hoverLabelY = 0;
 	String hoverLabel = "";
+	
+	// Details
 
 	public void settings() {
 		size(1400, 600, P2D);
@@ -131,26 +133,41 @@ public class ScatterAndMap extends PApplet {
 		scatterplot.draw(800, 0, 600, 400);
 
 		// hover marker
+		if(!hoverLabel.equals("")) {
 		fill(0);
 		ellipse(hoverX, hoverY, 10, 10);
 		text(hoverLabel, hoverLabelX, hoverLabelY);
-
+		}
 	}
 
 	public void mousePressed() {
+		
+		if (mouseX <= 800 && mouseY <= 600) {
+			for (Marker marker : map.getMarkers()) {
+				marker.setSelected(false);
+			}
+			Marker marker = map.getFirstHitMarker(mouseX, mouseY);
+			if (marker != null) {
+				marker.setSelected(true);
+				quartierLabel = (String) marker.getProperty("Quartiername");
+			} else {
+				quartierLabel = "";
+			}}
+
 		selectDistrictMarker();
+		getDetails();
 	}
 
 	public void mouseMoved() {
 		// damit nicht deselected wird wenn im Scatter gehovert wird
 		if (mouseX <= 800 && mouseY <= 600) {
 			for (Marker marker : map.getMarkers()) {
-				marker.setSelected(false);
+				//marker.setSelected(false);
 				marker.setStrokeWeight(1);
 			}
 			Marker marker = map.getFirstHitMarker(mouseX, mouseY);
 			if (marker != null) {
-				marker.setSelected(true);
+				//marker.setSelected(true);
 				marker.setStrokeWeight(3);
 				quartierLabel = (String) marker.getProperty("Quartiername");
 			} else {
@@ -208,15 +225,26 @@ public class ScatterAndMap extends PApplet {
 	// auch den Quartiernamen an
 	void selectScatterPoint() {
 		PVector mousePoint = new PVector(mouseX, mouseY);
+		PVector temp = null;
+		int tempI = -1;
 		for (int i = 0; i < einwohner.length; i++) {
 			PVector koordinate = new PVector(einwohner[i], radwegeLaenge[i]);
 			PVector koordinateOnScreen = scatterplot.getDataToScreen(koordinate);
+
 			if (dist(mouseX, mouseY, koordinateOnScreen.x, koordinateOnScreen.y) <= 10) {
-				hoverX = koordinateOnScreen.x;
-				hoverY = koordinateOnScreen.y;
-				hoverLabelX = koordinateOnScreen.x;
-				hoverLabelY = koordinateOnScreen.y;
-				hoverLabel = quartiernamen[i];
+				if(temp == null) {
+					temp = new PVector(koordinateOnScreen.x, koordinateOnScreen.y);
+					tempI = i;
+				} else if(dist(mouseX, mouseY, koordinateOnScreen.x, koordinateOnScreen.y) < dist(mouseX, mouseY, temp.x, temp.y)) {
+					temp = new PVector(koordinateOnScreen.x, koordinateOnScreen.y);
+					tempI = i;
+					
+				}
+				hoverX = temp.x;
+				hoverY = temp.y;
+				hoverLabelX = temp.x;
+				hoverLabelY = temp.y;
+				hoverLabel = quartiernamen[tempI];
 			} 
 		}
 
@@ -273,6 +301,29 @@ public class ScatterAndMap extends PApplet {
 
 		} 
 
+	}
+	
+	void getDetails() {
+		//doppelter Code find selected quartier from map
+		Marker marker = map.getFirstHitMarker(mouseX, mouseY);
+		if (marker != null) {
+			String quartiername = (String) marker.getProperty("Quartiername");
+			float radwege = 0;
+			float einwohner = 0;
+			int indexOfSelectedQuartier = -1;
+			for (int i = 0; i< quartiernamen.length; i++) {
+				if (quartiername.equals(quartiernamen[i])) {
+					indexOfSelectedQuartier = i;
+				}
+			}
+			if(indexOfSelectedQuartier > -1) {
+				radwege = radwegeLaenge[indexOfSelectedQuartier];
+				einwohner = this.einwohner[indexOfSelectedQuartier];
+				text(radwege,900, 400 );
+				text(einwohner, 900, 410);
+			}
+
+		}
 	}
 	
 	public static void main(String args[]) {
