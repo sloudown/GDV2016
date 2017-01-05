@@ -194,7 +194,11 @@ public class ScatterAndMap extends PApplet {
 		
 
 		selectDistrictMarker();
+		
+		clickScatterPoint();
 	}
+
+	
 
 	public void mouseMoved() {
 		// damit nicht deselected wird wenn im Scatter gehovert wird
@@ -261,6 +265,27 @@ public class ScatterAndMap extends PApplet {
 		}
 	}
 	
+	void selectDistrictMarkerByName(String name) {
+
+		for (Marker marker : map.getMarkers()) {
+			if (name.equals(marker.getProperty("Quartiername"))) {
+				marker.setSelected(true);
+				smallMap.getDefaultMarkerManager().clearMarkers(); // cleared
+																	// aber
+				// auch die
+				// radwege weg
+				// selectedDistrictMarker.setColor(color(255, 10));
+				smallMap.addMarkers(marker);
+				smallMap.zoomAndPanToFit(marker);
+				drawBikeLanes();
+				// muss in draw verschoben werden sonst blinkt es nur kurz auf-
+				// wird nur einmal gezeichnet
+				text(name, 600, 500);
+			}
+		}
+
+	}
+	
 	// markiert einen punkt im Scatterplot, wenn darauf geklickt wurde und zeigt
 	// auch den Quartiernamen an
 	void selectScatterPoint() {
@@ -306,12 +331,17 @@ public class ScatterAndMap extends PApplet {
 
 		} else {
 			clickedHoverLabel = "";
-		}
-				
-				
-			
+		}	
 		
 	}
+	
+	
+	 void clickScatterPoint() {
+		selectScatterPoint();
+		selectScatterPointByName(hoverLabel);
+		selectDistrictMarkerByName(hoverLabel);
+	}
+	
 	
 	void deselectScatterPoint() {
 		hoverX = 0;
@@ -391,6 +421,8 @@ public class ScatterAndMap extends PApplet {
 		 
 
 	}
+	
+
 	
 	void drawDetails() {
 			
