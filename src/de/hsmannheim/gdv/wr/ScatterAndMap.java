@@ -35,6 +35,7 @@ public class ScatterAndMap extends PApplet {
 	float[] einwohner;
 	float[] radwegeLaenge;
 	String[] quartiernamen;
+	String[] infos;
 
 	// koordinaten fuer hoverpoint
 	float hoverX;
@@ -128,7 +129,7 @@ public class ScatterAndMap extends PApplet {
 		smallMap.draw();
 
 		fill(255);
-		text(quartierLabel, mouseX, mouseY);
+		text(quartierLabel, mouseX, mouseY-5);
 
 		scatterplot.draw(800, 0, 600, 400);
 
@@ -208,7 +209,8 @@ public class ScatterAndMap extends PApplet {
 	}
 
 	void selectDistrictMarker(){
-		selectedDistrictMarker = map.getFirstHitMarker(mouseX, mouseY);
+		Marker selectedDistrictMarkerOriginal = map.getFirstHitMarker(mouseX, mouseY);
+		 selectedDistrictMarker = selectedDistrictMarkerOriginal;
 		if (selectedDistrictMarker != null) {
 			smallMap.getDefaultMarkerManager().clearMarkers(); // cleared aber
 																// auch die
@@ -244,7 +246,7 @@ public class ScatterAndMap extends PApplet {
 				}
 				hoverX = temp.x;
 				hoverY = temp.y;
-				hoverLabelX = temp.x;
+				hoverLabelX = temp.x+8;
 				hoverLabelY = temp.y;
 				hoverLabel = quartiernamen[tempI];
 			} 
@@ -268,10 +270,13 @@ public class ScatterAndMap extends PApplet {
 		String quartiernameScatter = hoverLabel;
 		Marker selectedMarker;
 		for (Marker marker : map.getMarkers()) {
-			marker.setSelected(false);
+			//marker.setSelected(false);
+			marker.setStrokeWeight(1);
 			quartiernameMap = (String) marker.getProperty("Quartiername");
 			if (quartiernameMap.equals(quartiernameScatter)) {
-				marker.setSelected(true);
+				//marker.setSelected(true);
+				marker.setStrokeWeight(3);
+
 			}
 		}
 		}
@@ -304,7 +309,7 @@ public class ScatterAndMap extends PApplet {
 			
 					hoverX = koordinateOnScreen.x;
 					hoverY = koordinateOnScreen.y;
-					hoverLabelX = koordinateOnScreen.x;
+					hoverLabelX = koordinateOnScreen.x+8;
 					hoverLabelY = koordinateOnScreen.y;
 					hoverLabel = quartiernamen[indexOfSelectedQuartier];
 			}
@@ -325,17 +330,38 @@ public class ScatterAndMap extends PApplet {
 				
 				fill(123,123,123);
 				text("Radwege",1050, 450 );
-				rect(1100, 435,radwege/100, 20);
+				rect(1150, 435,radwege/100, 20);
 				
 				text("Einwohner", 1050, 480);
-				rect(1100, 465, einwohner/100, 20);
+				rect(1150, 465, einwohner/100, 20);
 				
 				float longestRadweg = getLongestBikelane();
 				float highestEinwohnerzahl = getHighestPopulation();
 				
 				fill(color(60, 150));
-				rect(1100, 435, longestRadweg/100, 20);
-				rect(1100, 465, highestEinwohnerzahl/100, 20);
+				rect(1150, 435, longestRadweg/100, 20);
+				text((int) longestRadweg+ " Meter", 1150+(longestRadweg/100) +20, 450);
+				rect(1150, 465, highestEinwohnerzahl/100, 20);
+				text((int) highestEinwohnerzahl,1150+(highestEinwohnerzahl/100)+20, 480);
+				
+				
+				
+				String quartiername = quartiernamen[indexOfSelectedQuartier];
+				String zusatzinfo ="";
+				
+				switch (quartiername) {
+				case "Escher Wyss": 
+					zusatzinfo = "Einwohner sind hier vermutlich eher gering weil es sehr viele öffentliche Gebäude\n wie Hotels, Museen und Theater gibt";
+					break;
+				case "Enge" : 
+					zusatzinfo = "keine Ahnung";
+					break;
+
+				default:
+					zusatzinfo = "";
+				}
+				
+				text("Info:\n" + zusatzinfo, 1050, 510);
 			}
 
 		
