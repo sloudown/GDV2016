@@ -2,6 +2,7 @@ package de.hsmannheim.gdv.wr;
 
 import java.util.List;
 
+import org.gicentre.utils.colour.ColourTable;
 import org.gicentre.utils.stat.XYChart;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
@@ -16,6 +17,8 @@ import processing.core.PFont;
 import processing.core.PVector;
 import processing.data.Table;
 import processing.data.TableRow;
+import org.gicentre.utils.colour.*;    // For colour tables.
+
 
 public class ScatterAndMap extends PApplet {
 
@@ -46,7 +49,8 @@ public class ScatterAndMap extends PApplet {
 	float hoverLabelY = 0;
 	String hoverLabel = "";
 	
-	// Details
+	// ColorTable
+	ColourTable cTable1;
 
 	public void settings() {
 		size(1600, 600, P2D);
@@ -54,6 +58,29 @@ public class ScatterAndMap extends PApplet {
 
 	// Loads data into the chart and customizes its appearance.
 	public void setup() {
+		
+		// Load in data from a file
+				table = loadTable("quartierdaten_formatiert.csv", "header");
+
+				einwohner = new float[table.getRowCount()];
+				radwegeLaenge = new float[table.getRowCount()];
+				quartiernamen = new String[table.getRowCount()];
+				int reihe = 0;
+				for (TableRow row : table.rows()) {
+
+					float einwohnerzahl = row.getFloat("einwohneranzahl");
+					float radlaenge = row.getFloat("sum_streifen_wege");
+					String quartiername = row.getString("Quartiername");
+
+					einwohner[reihe] = einwohnerzahl;
+					radwegeLaenge[reihe] = radlaenge;
+					quartiernamen[reihe] = quartiername;
+					reihe++;
+				}
+		
+		int shortest = (int) getShortestBikelane()-1;
+		int longest = (int) getLongestBikelane()+1;
+		cTable1 = ColourTable.getPresetColourTable(ColourTable.YL_OR_RD,shortest,longest);
 
 		// ==== MAP ====
 		map = new UnfoldingMap(this, "map1", 0, 0, 800, 600);
@@ -62,7 +89,9 @@ public class ScatterAndMap extends PApplet {
 		List<Feature> quartiere = GeoJSONReader.loadData(this, "data/statistischequartiere.json");
 		List<Marker> quartierMarkers = MapUtils.createSimpleMarkers(quartiere);
 		for (Marker m : quartierMarkers) {
-			m.setColor(color(60, 150));
+			int indexOfQuartier = findeIndexOfQuartierByName((String)m.getProperty("Quartiername"));
+			int radwegLaenge = (int) radwegeLaenge[indexOfQuartier];
+			m.setColor(color(cTable1.findColour(radwegLaenge), 150));
 		}
 		map.addMarkers(quartierMarkers);
 
@@ -85,24 +114,7 @@ public class ScatterAndMap extends PApplet {
 		// Both x and y data set here.
 		scatterplot = new XYChart(this);
 
-		// Load in data from a file
-		table = loadTable("quartierdaten_formatiert.csv", "header");
-
-		einwohner = new float[table.getRowCount()];
-		radwegeLaenge = new float[table.getRowCount()];
-		quartiernamen = new String[table.getRowCount()];
-		int reihe = 0;
-		for (TableRow row : table.rows()) {
-
-			float einwohnerzahl = row.getFloat("einwohneranzahl");
-			float radlaenge = row.getFloat("sum_streifen_wege");
-			String quartiername = row.getString("Quartiername");
-
-			einwohner[reihe] = einwohnerzahl;
-			radwegeLaenge[reihe] = radlaenge;
-			quartiernamen[reihe] = quartiername;
-			reihe++;
-		}
+		
 
 		scatterplot.setData(einwohner, radwegeLaenge);
 
@@ -297,6 +309,21 @@ public class ScatterAndMap extends PApplet {
 		return indexOfSelectedQuartier;
 	}
 	
+	int findeIndexOfQuartierByName(String name) {
+		
+		int indexOfQuartier = -1;
+		
+			
+			for (int i = 0; i< quartiernamen.length; i++) {
+				if (name.equals(quartiernamen[i])) {
+					indexOfQuartier = i;
+				}
+			}
+		
+		return indexOfQuartier;
+	}
+	
+	
 	//beim hover ueber die quartieren wird quartier im Scatter auch markiert
 	void findSelectedQuartierFromMap() {
 
@@ -375,6 +402,16 @@ public class ScatterAndMap extends PApplet {
 			}
 		}
 		return laengste;
+	}
+	
+	float getShortestBikelane() {
+		float kuerzeste = 99999999;
+		for(float radweg : radwegeLaenge) {
+			if(kuerzeste > radweg) {
+				kuerzeste = radweg;
+			}
+		}
+		return kuerzeste;
 	}
 	
 	float getHighestPopulation() {
