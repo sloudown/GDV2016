@@ -49,6 +49,12 @@ public class ScatterAndMap extends PApplet {
 	float hoverLabelY = 0;
 	String hoverLabel = "";
 	
+	
+	// koordinaten fuer clicked hover label
+	float clickedHoverLabelX = 0;
+	float clickedHoverLabelY = 0;
+	String clickedHoverLabel = "";
+	
 	// ColorTable
 	ColourTable cTable1;
 
@@ -151,13 +157,19 @@ public class ScatterAndMap extends PApplet {
 		ellipse(hoverX, hoverY, 10, 10);
 		text(hoverLabel, hoverLabelX, hoverLabelY);
 		}
+		
+		if(!clickedHoverLabel.equals("")) {
+			fill(0);
+			ellipse(clickedHoverLabelX, clickedHoverLabelY, 10, 10);
+			text(clickedHoverLabel, clickedHoverLabelX+8, clickedHoverLabelY);
+			}
 		drawDetails();
 
 	}
 
 	public void mousePressed() {
 		
-		if (mouseX <= 800 && mouseY <= 600) {
+		//if (mouseX <= 800 && mouseY <= 600) {
 			for (Marker marker : map.getMarkers()) {
 				marker.setSelected(false);
 			}
@@ -165,9 +177,21 @@ public class ScatterAndMap extends PApplet {
 			if (marker != null) {
 				marker.setSelected(true);
 				quartierLabel = (String) marker.getProperty("Quartiername");
+				selectScatterPointByName((String) marker.getProperty("Quartiername"));
 			} else {
 				quartierLabel = "";
-			}}
+			}
+			
+		//}
+		
+		
+		 marker = map.getFirstHitMarker(mouseX, mouseY);
+		if (marker != null) {
+			selectScatterPointByName((String) marker.getProperty("Quartiername"));
+		} else {
+			selectScatterPointByName("");
+		}
+		
 
 		selectDistrictMarker();
 	}
@@ -264,6 +288,29 @@ public class ScatterAndMap extends PApplet {
 			} 
 		}
 
+	}
+	
+	void selectScatterPointByName(String name) {
+		
+		int indexOfQuartier = findeIndexOfQuartierByName(name);
+		PVector koordinateOnScreen = null;
+		
+		if(indexOfQuartier > -1) {
+			PVector koordinate = new PVector(einwohner[indexOfQuartier], radwegeLaenge[indexOfQuartier]);
+			 koordinateOnScreen = scatterplot.getDataToScreen(koordinate);
+			 
+			
+			 clickedHoverLabelX = koordinateOnScreen.x;
+			 clickedHoverLabelY = koordinateOnScreen.y;
+			 clickedHoverLabel = quartiernamen[indexOfQuartier];
+
+		} else {
+			clickedHoverLabel = "";
+		}
+				
+				
+			
+		
 	}
 	
 	void deselectScatterPoint() {
