@@ -26,7 +26,7 @@ public class ScatterAndMap extends PApplet {
 	UnfoldingMap map;
 	UnfoldingMap smallMap;
 	BarScaleUI barScale;
-	int radwegColor = color(255, 0, 0);
+	int radwegColor = color(255, 0, 0); //rot
 	int radstreifenColor = color(0, 0, 153);
 	String quartierLabel = "";
 
@@ -59,7 +59,7 @@ public class ScatterAndMap extends PApplet {
 	ColourTable cTable1;
 
 	public void settings() {
-		size(1600, 600, P2D);
+		size(1600, 660, P2D);
 	}
 
 	// Loads data into the chart and customizes its appearance.
@@ -89,7 +89,7 @@ public class ScatterAndMap extends PApplet {
 		cTable1 = ColourTable.getPresetColourTable(ColourTable.YL_OR_RD,shortest,longest);
 
 		// ==== MAP ====
-		map = new UnfoldingMap(this, "map1", 0, 0, 800, 600);
+		map = new UnfoldingMap(this, "map1", 0, 0, 800, 660);
 		map.zoomAndPanTo(12, new Location(47.37174, 8.54226));
 		MapUtils.createDefaultEventDispatcher(this, map);
 		List<Feature> quartiere = GeoJSONReader.loadData(this, "data/statistischequartiere.json");
@@ -102,7 +102,7 @@ public class ScatterAndMap extends PApplet {
 		map.addMarkers(quartierMarkers);
 
 		// ==== SMALL MAP ====
-		smallMap = new UnfoldingMap(this, "smallMap", 820, 420, 200, 200);
+		smallMap = new UnfoldingMap(this, "smallMap", 865, 440, 200, 220);
 		smallMap.zoomAndPanTo(12, new Location(47.37174, 8.54226));		
 		drawBikeLanes();
 
@@ -146,10 +146,10 @@ public class ScatterAndMap extends PApplet {
 
 		smallMap.draw();
 
-		fill(255);
+		fill(0);
 		text(quartierLabel, mouseX, mouseY-5);
 
-		scatterplot.draw(800, 0, 600, 400);
+		scatterplot.draw(820, 0, 600, 400);
 
 		// hover marker scatter
 		if(!hoverLabel.equals("")) {
@@ -163,7 +163,11 @@ public class ScatterAndMap extends PApplet {
 			ellipse(clickedHoverLabelX, clickedHoverLabelY, 10, 10);
 			text(clickedHoverLabel, clickedHoverLabelX+8, clickedHoverLabelY);
 			}
-		drawDetails();
+		
+		if(!"".equals(getSelectedQuartiern())) {
+			drawDetails(getSelectedQuartiern());
+		}
+		
 
 	}
 
@@ -424,21 +428,21 @@ public class ScatterAndMap extends PApplet {
 	
 
 	
-	void drawDetails() {
+	void drawDetails(String name) {
 			
 			float radwege = 0;
 			float einwohner = 0;
-			int indexOfSelectedQuartier = findeIndexOfSelectedQuartier();
+			int indexOfSelectedQuartier = findeIndexOfQuartierByName(name);
 			
 			if(indexOfSelectedQuartier > -1) {
 				radwege = radwegeLaenge[indexOfSelectedQuartier];
 				einwohner = this.einwohner[indexOfSelectedQuartier];
 				
 				fill(123,123,123);
-				text("Radwege",1050, 450 );
+				text("Radwege",1075, 450 );
 				rect(1150, 435,radwege/100, 20);
 				
-				text("Einwohner", 1050, 480);
+				text("Einwohner", 1075, 480);
 				rect(1150, 465, einwohner/100, 20);
 				
 				float longestRadweg = getLongestBikelane();
@@ -467,11 +471,22 @@ public class ScatterAndMap extends PApplet {
 					zusatzinfo = "";
 				}
 				
-				text("Info:\n" + zusatzinfo, 1050, 510);
+				text("Info:\n" + zusatzinfo, 1075, 510);
 			}
 
 		
 	}
+	
+	String getSelectedQuartiern() {
+		String selectedMarker = "";
+		for(Marker marker : map.getMarkers()) {
+			if(marker.isSelected()) {
+				selectedMarker = (String) marker.getProperty("Quartiername");
+			}
+		}
+		return selectedMarker;
+	}
+	
 	
 	float getLongestBikelane() {
 		float laengste = 0;
