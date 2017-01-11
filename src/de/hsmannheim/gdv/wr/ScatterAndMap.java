@@ -39,6 +39,7 @@ public class ScatterAndMap extends PApplet {
 	float[] radwegeLaenge;
 	String[] quartiernamen;
 	String[] infos;
+	float[] area;
 
 	// koordinaten fuer hoverpoint
 	float hoverX;
@@ -77,10 +78,12 @@ public class ScatterAndMap extends PApplet {
 					float einwohnerzahl = row.getFloat("einwohneranzahl");
 					float radlaenge = row.getFloat("sum_streifen_wege");
 					String quartiername = row.getString("Quartiername");
+					float areakm2 = row.getFloat("area_km2");
 
 					einwohner[reihe] = einwohnerzahl;
 					radwegeLaenge[reihe] = radlaenge;
 					quartiernamen[reihe] = quartiername;
+					//area[reihe] = areakm2;
 					reihe++;
 				}
 		
@@ -453,6 +456,8 @@ public class ScatterAndMap extends PApplet {
 				text((int) longestRadweg+ " Meter", 1150+(longestRadweg/100) +20, 450);
 				rect(1150, 465, highestEinwohnerzahl/100, 20);
 				text((int) highestEinwohnerzahl,1150+(highestEinwohnerzahl/100)+20, 480);
+				
+				//text("Größe: " + area[indexOfSelectedQuartier], 1075, 460);
 				
 				
 				
