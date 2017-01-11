@@ -89,7 +89,7 @@ public class ScatterAndMap extends PApplet {
 		
 		int shortest = (int) getShortestBikelane()-1;
 		int longest = (int) getLongestBikelane()+1;
-		cTable1 = ColourTable.getPresetColourTable(ColourTable.YL_OR_RD,shortest,longest);
+		cTable1 = ColourTable.getPresetColourTable(ColourTable.ORANGES,shortest,longest);
 
 		// ==== MAP ====
 		map = new UnfoldingMap(this, "map1", 0, 0, 800, 660);
@@ -101,6 +101,9 @@ public class ScatterAndMap extends PApplet {
 			int indexOfQuartier = findeIndexOfQuartierByName((String)m.getProperty("Quartiername"));
 			int radwegLaenge = (int) radwegeLaenge[indexOfQuartier];
 			m.setColor(color(cTable1.findColour(radwegLaenge), 150));
+			//m.setHighlightColor(color(146,146,146));
+			//m.setStrokeColor(color(0,44,10));
+			//m.setHighlightStrokeColor(color(0,44,10));
 		}
 		map.addMarkers(quartierMarkers);
 
@@ -138,6 +141,7 @@ public class ScatterAndMap extends PApplet {
 		scatterplot.setPointColour(color(180, 50, 50, 200));
 		scatterplot.setPointSize(7);
 
+		
 	}
 
 	// Draws the scatterplot.
@@ -183,6 +187,8 @@ public class ScatterAndMap extends PApplet {
 			Marker marker = map.getFirstHitMarker(mouseX, mouseY);
 			if (marker != null) {
 				marker.setSelected(true);
+				//marker.setHighlightColor(color(3,55,64));
+				//marker.setStrokeColor(color(20,0,0));
 				quartierLabel = (String) marker.getProperty("Quartiername");
 				selectScatterPointByName((String) marker.getProperty("Quartiername"));
 			} else {
@@ -218,6 +224,7 @@ public class ScatterAndMap extends PApplet {
 			if (marker != null) {
 				//marker.setSelected(true);
 				marker.setStrokeWeight(3);
+				//marker.setStrokeColor(color(20,0,0));
 				quartierLabel = (String) marker.getProperty("Quartiername");
 			} else {
 				quartierLabel = "";
@@ -268,7 +275,7 @@ public class ScatterAndMap extends PApplet {
 			drawBikeLanes();
 			String name = selectedDistrictMarker.getStringProperty("Quartiername");
 			//muss in draw verschoben werden sonst blinkt es nur kurz auf- wird nur einmal gezeichnet
-			text(name, 600, 500);
+			//text(name, 600, 500);
 		}
 	}
 	

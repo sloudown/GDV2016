@@ -48,8 +48,11 @@ public class Quartiere_01 extends PApplet {
 		    ShapeFeature polygonFeature = (ShapeFeature) feature;
 		    SimplePolygonMarker m = new SimplePolygonMarker(polygonFeature.getLocations());
 		    m.setColor(quartierColor);
-		    m.setStrokeWeight(1);
+		    m.setStrokeWeight(3);
 		    m.setStrokeColor(color(0, 0, 0, 0));
+		    m.setHighlightColor(color(0,0,0));
+		    m.setStrokeColor(color(0,0,0));
+		    m.setHighlightColor(color(0,0,0));
 		    quartierMarkers.add(m);
 
 		    List<Location> listLocation= polygonFeature.getLocations();
