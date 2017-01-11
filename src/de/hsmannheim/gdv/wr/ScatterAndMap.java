@@ -294,7 +294,7 @@ public class ScatterAndMap extends PApplet {
 				drawBikeLanes();
 				// muss in draw verschoben werden sonst blinkt es nur kurz auf-
 				// wird nur einmal gezeichnet
-				text(name, 600, 500);
+				//text(name, 600, 500);
 			}
 		}
 
@@ -449,20 +449,25 @@ public class ScatterAndMap extends PApplet {
 				einwohner = this.einwohner[indexOfSelectedQuartier];
 				
 				fill(123,123,123);
-				text("Radwege",1075, 450 );
-				rect(1150, 435,radwege/100, 20);
+				text(quartiernamen[indexOfSelectedQuartier],1075,450);
 				
-				text("Einwohner", 1075, 480);
-				rect(1150, 465, einwohner/100, 20);
+				
+				text("Radwege",1075, 480 );
+				rect(1150, 465,radwege/100, 20);
+				
+				text("Einwohner", 1075, 510);
+				rect(1150, 495, einwohner/100, 20);
 				
 				float longestRadweg = getLongestBikelane();
 				float highestEinwohnerzahl = getHighestPopulation();
 				
+				
+				
 				fill(color(60, 150));
-				rect(1150, 435, longestRadweg/100, 20);
-				text((int) longestRadweg+ " Meter", 1150+(longestRadweg/100) +20, 450);
-				rect(1150, 465, highestEinwohnerzahl/100, 20);
-				text((int) highestEinwohnerzahl,1150+(highestEinwohnerzahl/100)+20, 480);
+				rect(1150, 465, longestRadweg/100, 20);
+				text((int) longestRadweg+ " Meter", 1150+(longestRadweg/100) +20, 480);
+				rect(1150, 495, highestEinwohnerzahl/100, 20);
+				text((int) highestEinwohnerzahl,1150+(highestEinwohnerzahl/100)+20, 510);
 				
 				//text("Größe: " + area[indexOfSelectedQuartier], 1075, 460);
 				
@@ -473,17 +478,17 @@ public class ScatterAndMap extends PApplet {
 				
 				switch (quartiername) {
 				case "Escher Wyss": 
-					zusatzinfo = "Einwohner sind hier vermutlich eher gering weil es sehr viele öffentliche Gebäude\n wie Hotels, Museen und Theater gibt";
+					zusatzinfo = "Info:\nEinwohner sind hier vermutlich eher gering weil es sehr viele öffentliche Gebäude\nwie Hotels, Museen und Theater gibt";
 					break;
 				case "Enge" : 
-					zusatzinfo = "keine Ahnung";
+					zusatzinfo = "Info:\nBei Enge fällt auf, dass auf der gleichen Straße entlang des Flusses drei Radwege\neingezeichnet werden. Es besteht der Verdacht, dass die überflüssigen Linien in die Berechnungen einflossen.";
 					break;
 
 				default:
 					zusatzinfo = "";
 				}
 				
-				text("Info:\n" + zusatzinfo, 1075, 510);
+				text( zusatzinfo, 1075, 540);
 			}
 
 		
