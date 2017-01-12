@@ -10,10 +10,12 @@ import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.data.GeoJSONReader;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.Marker;
+import de.fhpotsdam.unfolding.marker.SimplePolygonMarker;
 import de.fhpotsdam.unfolding.ui.BarScaleUI;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PImage;
 import processing.core.PVector;
 import processing.data.Table;
 import processing.data.TableRow;
@@ -60,6 +62,8 @@ public class ScatterAndMap extends PApplet {
 	ColourTable cTable1;
 
 	public void settings() {
+		//fullScreen();
+		
 		size(1600, 660, P2D);
 	}
 
@@ -134,8 +138,8 @@ public class ScatterAndMap extends PApplet {
 		scatterplot.showXAxis(true);
 		scatterplot.showYAxis(true);
 		scatterplot.setXFormat("###,###");
-		scatterplot.setXAxisLabel("Anzahl der Einwohner (Angabe in 1000)");
-		scatterplot.setYAxisLabel("Länge der Radwege un Meter");
+		scatterplot.setXAxisLabel("Anzahl der Einwohner");
+		scatterplot.setYAxisLabel("Länge der Radwege in Meter");
 
 		// Symbol styles
 		scatterplot.setPointColour(color(180, 50, 50, 200));
@@ -175,7 +179,25 @@ public class ScatterAndMap extends PApplet {
 			drawDetails(getSelectedQuartiern());
 		}
 		
-
+		PFont font = createFont("Arial Bold", 25);
+		  textFont(font);
+		fill(0);
+		text("RADWEGE IN ZÜRICH", 1270,640);
+		
+		PFont font3 = createFont("Arial Bold", 15);
+		textFont(font3);
+		text("CHOROPLETH", 300,30);
+		text("SCATTERPLOT", 1100,20);
+		PFont font4 = createFont("Arial Bold", 15);
+		textFont(font4);
+		text("MINI MAP", 865,430);
+		text("BALKENDIAGRAMM", 1150,430);
+		
+		PFont font2 = createFont("Arial", 11);
+		textFont(font2);
+		
+		PImage imgChoro = loadImage("Legende.png");
+		image(imgChoro, 10,450);
 	}
 
 	public void mousePressed() {
@@ -263,19 +285,24 @@ public class ScatterAndMap extends PApplet {
 	}
 
 	void selectDistrictMarker(){
-		Marker selectedDistrictMarkerOriginal = map.getFirstHitMarker(mouseX, mouseY);
-		 selectedDistrictMarker = selectedDistrictMarkerOriginal;
+		 
+		 selectedDistrictMarker = map.getFirstHitMarker(mouseX, mouseY);
 		if (selectedDistrictMarker != null) {
 			smallMap.getDefaultMarkerManager().clearMarkers(); // cleared aber
 																// auch die
 																// radwege weg
-			// selectedDistrictMarker.setColor(color(255, 10));
-			smallMap.addMarkers(selectedDistrictMarker);
-			smallMap.zoomAndPanToFit(selectedDistrictMarker);
+
+			
+			Marker clonedMarker = clone(selectedDistrictMarker);
+			clonedMarker.setColor(color(60, 150));
+			smallMap.getDefaultMarkerManager().clearMarkers();
+			smallMap.addMarker(clonedMarker);
+			
+			//smallMap.addMarkers(clonedMarker);
+			//smallMap.zoomAndPanToFit(clonedMarker);
 			drawBikeLanes();
 			String name = selectedDistrictMarker.getStringProperty("Quartiername");
-			//muss in draw verschoben werden sonst blinkt es nur kurz auf- wird nur einmal gezeichnet
-			//text(name, 600, 500);
+			
 		}
 	}
 	
@@ -288,9 +315,11 @@ public class ScatterAndMap extends PApplet {
 																	// aber
 				// auch die
 				// radwege weg
-				// selectedDistrictMarker.setColor(color(255, 10));
-				smallMap.addMarkers(marker);
-				smallMap.zoomAndPanToFit(marker);
+				Marker clonedMarker = clone(marker);
+				clonedMarker.setColor(color(60, 150));
+				clonedMarker.setStrokeWeight(2);;
+				smallMap.addMarkers(clonedMarker);
+				smallMap.zoomAndPanToFit(clonedMarker);
 				drawBikeLanes();
 				// muss in draw verschoben werden sonst blinkt es nur kurz auf-
 				// wird nur einmal gezeichnet
@@ -481,7 +510,7 @@ public class ScatterAndMap extends PApplet {
 					zusatzinfo = "Info:\nEinwohner sind hier vermutlich eher gering weil es sehr viele öffentliche Gebäude\nwie Hotels, Museen und Theater gibt";
 					break;
 				case "Enge" : 
-					zusatzinfo = "Info:\nBei Enge fällt auf, dass auf der gleichen Straße entlang des Flusses drei Radwege\neingezeichnet werden. Es besteht der Verdacht, dass die überflüssigen Linien in die Berechnungen einflossen.";
+					zusatzinfo = "Info:\nBei Enge fällt auf, dass auf der gleichen Straße entlang des Flusses drei Radwege\neingezeichnet werden. Es besteht der Verdacht, dass die überflüssigen Linien\nin die Berechnungen einflossen.";
 					break;
 
 				default:
@@ -536,7 +565,19 @@ public class ScatterAndMap extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { ScatterAndMap.class.getName() });
+		PApplet.main(new String[] { "--present",ScatterAndMap.class.getName() });
 	}
+	
+	public Marker clone(Marker marker) {
+		Marker clonedMarker = null;
 
+		if (marker instanceof SimplePolygonMarker) {
+			SimplePolygonMarker polyMarker = (SimplePolygonMarker) marker;
+			
+			clonedMarker = new SimplePolygonMarker(polyMarker.getLocations());
+			clonedMarker.setProperties(polyMarker.getProperties());
+		}
+
+		return clonedMarker;
+	}
 }
